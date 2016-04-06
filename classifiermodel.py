@@ -18,10 +18,11 @@ class ClassifierModel(object):
 		client = MongoClient('localhost',27017)
 		collection = client["mydb"]["web"]
 		datas = collection.find()
+		#print len(datas)
 		for data in datas:
 			try:
 				category = data['category']
-				text = category['article']
+				text = data['article']
 				if self.dirctory.has_key(category):
 					self.dirctory[category].append(text)
 				else:
@@ -36,13 +37,13 @@ class ClassifierModel(object):
 		self.vectorizer.fit_transform(corpus)
 		print "train vector number is %d...."%len(corpus)
 	def trainClassifiers(self):
-		number = 200
+		number = 300
 		for category in cates:
 			classifier = LogisticRegression()
 			train_x = []
 			train_y = []
 			for cate in cates:
-				if cate == categorys:
+				if cate == category:
 					texts = self.dirctory[cate][0:number*10]
 					for text in texts:
 						train_x.append(self.getFeature(text))
@@ -53,11 +54,19 @@ class ClassifierModel(object):
 						train_x.append(self.getFeature(text))
 						train_y.append(0)
 			classifier.fit(train_x,train_y)
-			self.classifiers.update({categoey:classifier})
+			self.classifiers.update({category:classifier})
 			print "%s classifier train is over...."%category
 		print "All classifier train is over...."
 	def getFeature(self,text):
 		return self.vectorizer.transform([text]).toarray()[0]
-
-
-
+	def getCategorys(self,text):
+		feature = self.getFeature(text)
+		categorys = []
+		for cate in cates:
+			classifier = self.classifiers[cate]
+			ans = classifier.predict(feature)[0]
+			if ans == 1:
+				categorys.append(cate)
+		if categorys == []:
+			return ['Other']
+		return categorys
