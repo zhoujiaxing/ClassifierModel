@@ -1,1 +1,0 @@
-{'Cricket': 3081, 'Lifestyle': 3332, 'Business': 3502, 'Auto': 2500, 'National': 4997, 'Entertainment/Bollywood': 4281, 'Sports': 3561, 'Other': 125, 'Health': 1979, 'World': 3445, 'Politics': 4835, 'Technology': 2164}
