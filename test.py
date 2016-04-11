@@ -1,38 +1,53 @@
-import classifiermodel
-import string
+from classifiermodel import ClassifierModel
 from pymongo import MongoClient
+
 cates=["Auto","Business","Cricket","Entertainment/Bollywood","Health","Lifestyle","National","Politics","Sports","Technology","World"]
+
+model = ClassifierModel()
+
+def getTrainData():
+	client = MongoClient('localhost',27017)
+	collection = cilent['mydb']['corpus']
+	corpus = {}
+	for cate in cates:
+		corpus[cate] = []
+		datas = collection.find({'category':cate})
+		for data in datas:
+			text = data['text']
+			corpus[cate].append(text)
+
+def getTestData():
+	client = MongoClient('localhost',27017)
+	collection = client['mydb']['corpus']
+	corpus = {}
+
 if __name__ == "__main__":
-	model = classifiermodel.ClassifierModel()
-	words = model.vectorizer.get_feature_names()
-	print "vecabulary number is %d ...."%len(words)
-	file1 = open("vecabulary.txt","w")
-	for word in words:
-		file1.write(word+"\n")
-	file1.close()
-	#test
-	ret = {}
+	client = MongoClient('localhost',27017)
+	collection = client['mydb']['corpus']
+	dirctory = model.dirctory
+	testdata = {}
+	nc = {}
+	tnc = {}
 	for cate in cates:
-		ret[cate] = 0
-	ret["Other"] = 0
-	dirc = model.dirctory
+		nc[cate] = 0
+		tnc[cate] = 0
+		testdata[cate] = dirctory[cate][6500:7500]
+	nc['Other'] = tnc['Other'] = 0
 	for cate in cates:
-		texts = dirc[cate][8000:9000]
-		fileopen = open('./test5/'+cate[0:13]+".txt","w")
-		fileopen.write(str(len(texts))+'\n')
-		count = 0
+		texts = testdata[cate]
 		for text in texts:
 			categorys = model.getCategorys(text)
 			for category in categorys:
-				ret[category] = ret[category] + 1
-				fileopen.write(category+' ')
-				if cate ==  category:
-					count = count + 1
-			fileopen.write("\n")
-		fileopen.write(str(count))
-		fileopen.write(str(float(count)/float(len(texts))*100)+'\%')
-		fileopen.close()
-		file1 = open("./test5/"+"ret.txt","w")
-		file1.write(str(ret))
-		file1.close()
-		print "%s test is over...."%cate
+				if cate == category:
+					nc[category] = nc[category] + 1
+				tnc[category] = tnc[category] + 1
+	fileopen = open("Testresult4.txt",'w')
+	fileopen.write("1\n")
+	fileopen.write('cate\t\trecovery\ttotal\trecovery\tright\n')
+	for cate in cates:
+		right = float(nc[cate])/float(float(tnc[cate]-nc[cate])/10.0+nc[cate])*100
+		recovery = float(nc[cate])/1000.0*100
+		fileopen.write("%s\t\t%d\t\t\t%d\t%f\t%f\n"%(cate[0:4],nc[cate],tnc[cate],recovery,right))
+	fileopen.write("%s\t%d\n"%('Other',tnc['Other']))
+	fileopen.close()
+
