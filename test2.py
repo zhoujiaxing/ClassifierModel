@@ -1,6 +1,7 @@
 from classifier import Classifier
 from pymongo import MongoClient
 model = Classifier()
+
 client = MongoClient('localhost',27017)
 collection = client['mydb']['web']
 
@@ -14,7 +15,7 @@ nc['Other'] = tnc['Other'] = 0
 
 for cate in cates:
 	fileopen = open('./Result/test7/'+cate[0:13]+'.txt','w')
-	datas = collection.find({'category':cate})[6500:7500]
+	datas = collection.find({'category':cate})[8000:9000]
 	count = 0
 	for data in datas:
 		text = data['article']

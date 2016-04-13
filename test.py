@@ -1,10 +1,10 @@
 from classifiermodel import ClassifierModel
 from pymongo import MongoClient
 
+
 cates=["Auto","Business","Cricket","Entertainment/Bollywood","Health","Lifestyle","National","Politics","Sports","Technology","World"]
 
 model = ClassifierModel()
-
 def getTrainData():
 	client = MongoClient('localhost',27017)
 	collection = cilent['mydb']['corpus']
@@ -50,4 +50,3 @@ if __name__ == "__main__":
 		fileopen.write("%s\t\t%d\t\t\t%d\t%f\t%f\n"%(cate[0:4],nc[cate],tnc[cate],recovery,right))
 	fileopen.write("%s\t%d\n"%('Other',tnc['Other']))
 	fileopen.close()
-

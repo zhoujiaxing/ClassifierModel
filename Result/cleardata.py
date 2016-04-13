@@ -4,7 +4,7 @@ from pymongo import MongoClient
 cates=["Auto","Business","Cricket","Entertainment/Bollywood","Health","Lifestyle","National","Politics","Sports","Technology","World"]
 if __name__ == "__main__":
 	client = MongoClient("127.0.0.1",27017)
-	db = client["mydb"]["corpus1"]
+	db = client["mydb"]["corpus"]
 	model = classifiermodel.ClassifierModel()
 	ret = {}
 	for cate in cates:
